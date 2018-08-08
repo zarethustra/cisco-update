@@ -1,0 +1,7 @@
+---
+- hosts: ansible-test
+  gather_facts: no
+
+
+  roles:
+    - update_ios

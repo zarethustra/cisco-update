@@ -1,0 +1,4 @@
+---
+- name:     Update IOS.
+  include:  update_ios.yml
+  tags:     update_ios

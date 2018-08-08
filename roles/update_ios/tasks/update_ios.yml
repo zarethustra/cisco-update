@@ -1,0 +1,11 @@
+---
+- name: Check current version.
+  ios_command:
+      commands: dir | i bin
+  register: dir
+- debug:
+    var: dir
+    verbosity: 1
+
+- shell: Echo "Match"
+  when: dir.stdout | join(' ') | regex_findall('c2960.*')
