@@ -1,11 +1,38 @@
 ---
+- name: Gather facts.
+  ios_facts:
+    gather_subset: "!hardware"
+# - debug:
+#     msg: "Device {{ansible_net_hostname}} is running version {{ansible_net_image}}"
+#     verbosity: 1
+
 - name: Check current version.
   ios_command:
       commands: dir | i bin
   register: dir
-- debug:
-    var: dir
+# - debug:
+#     var: dir
+#     verbosity: 1
+
+# - name: Testing
+#   debug:
+#     msg: "Install file"
+#   when:  (not dir.stdout | join(' ') | regex_search(ios_version)) and (not ansible_net_image | regex_search(ios_version))
+
+- name: Show variables.
+  debug:
+    msg:
+      - "ios_version->{{ios_version}}"
+      - "image      ->{{ansible_net_image}}"
+      - "flash      ->{{dir.stdout_lines}}"
     verbosity: 1
 
-- shell: Echo "Match"
-  when: dir.stdout | join(' ') | regex_findall('c2960.*')
+
+- name: Copy file.
+  ios_command:
+    commands:
+      - command: copy ftp://cisco:Tran$f3rD8ta@10.217.25.197/c2960s-universalk9-mz.152-2.E8.bin flash://c2960s-universalk9-mz.152-2.E8.bin
+        prompt: 'Destination filename [c2960s-universalk9-mz.152-2.E8.bin]?'
+        answer: "\r"
+    wait_for: result[0] contains OK
+  when: (not dir.stdout | join(' ') | regex_search(ios_version)) and (not ansible_net_image | regex_search(ios_version))
