@@ -2,22 +2,11 @@
 - name: Gather facts.
   ios_facts:
     gather_subset: "!hardware"
-# - debug:
-#     msg: "Device {{ansible_net_hostname}} is running version {{ansible_net_image}}"
-#     verbosity: 1
 
 - name: Check current version.
   ios_command:
       commands: dir | i bin
   register: dir
-# - debug:
-#     var: dir
-#     verbosity: 1
-
-# - name: Testing
-#   debug:
-#     msg: "Install file"
-#   when:  (not dir.stdout | join(' ') | regex_search(ios_version)) and (not ansible_net_image | regex_search(ios_version))
 
 - name: Show variables.
   debug:
@@ -36,3 +25,20 @@
         answer: "\r"
     wait_for: result[0] contains OK
   when: (not dir.stdout | join(' ') | regex_search(ios_version)) and (not ansible_net_image | regex_search(ios_version))
+
+- name: Verify chksum.
+  ios_command:
+    commands: verify /md5 flash:{{ios_version}}
+  register: md5
+- name: Parse md5
+  # debug:
+  #   msg: "{{md5.stdout | join(' ') | regex_findall( '[\\d|\\w]{32}' ) }}"
+  #   # msg: "{{ ansible_interfaces | select('match', '^(eth|wlan)[0-9]+') | list }}"
+    # msg: "{{md5.stdout | join(' ') | regex_findall(ios_version_chksum) }}"
+  # when: not md5.stdout | join (' ') | regex_search(ios_version_chksum)
+  fail:
+    msg:
+      - "The MD5 checksums do not match"
+      - "File check sum is:{{ios_version_chksum}}"
+      - "The device calculated checksum is:{{md5.stdout | join(' ') | regex_findall( '[\\d|\\w]{32}' ) }}"
+  when: not md5.stdout | join (' ') | regex_search(ios_version_chksum)
