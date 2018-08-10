@@ -1,0 +1,28 @@
+---
+- name: output
+  ios_command:
+    commands: "dir flash: | i free"
+  register: free_space
+- debug: var=free_space.stdout[0]
+
+# - set_fact: myvar="{{free_space.stdout | join(' ')}}"
+# - debug: var=myvar
+
+- name: Facts
+  set_fact:
+    my_free: "{{ free_space.stdout[0] | regex_search(regexp) }}"
+  vars:
+    regexp: '(?<=\()\d+'
+- debug:
+    msg:
+      - "Free Space ->{{my_free}}"
+      - "File size  ->{{ios_filesize}}"
+
+# - set_fact:
+#     total_free: "{{my_free | int - ios_filesize}}"
+# - debug: var=total_free
+
+- name: test size
+  debug:
+    msg: Not enough space
+  when: (ios_filesize | int) >= (my_free | int)

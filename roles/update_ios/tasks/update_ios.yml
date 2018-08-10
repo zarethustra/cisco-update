@@ -16,10 +16,6 @@
 - debug:
     var: free_space # not required. A variable name to debug.  Mutually exclusive with the 'msg' option.
 
-- set_fact:
-  free_dict: "{{free_space.stdout}}"   
-- debug:
-  var: free_space   
 - name: Check free space.
   debug:
     msg: "space {{free_space.stdout | join(' ') | regex_findall( '(?<=\\()\\d+' ) }}"
