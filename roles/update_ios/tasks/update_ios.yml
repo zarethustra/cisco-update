@@ -8,6 +8,27 @@
       commands: dir | i bin
   register: dir
 
+- name: Get flash free space.
+  ios_command:
+    commands: "dir flash: | i free"
+  register: free_space
+
+- debug:
+    var: free_space # not required. A variable name to debug.  Mutually exclusive with the 'msg' option.
+
+- set_fact:
+  free_dict: "{{free_space.stdout}}"   
+- debug:
+  var: free_space   
+- name: Check free space.
+  debug:
+    msg: "space {{free_space.stdout | join(' ') | regex_findall( '(?<=\\()\\d+' ) }}"
+
+  # vars:
+    # free_memory: "{{free_space.stdout | join(' ') | regex_findall( '(?<=\\()\\d+' ) }}"
+# - debug:
+    # var: "{{free_memory}}"
+
 - name: Show variables.
   debug:
     msg:
@@ -15,7 +36,6 @@
       - "image      ->{{ansible_net_image}}"
       - "flash      ->{{dir.stdout_lines}}"
     verbosity: 1
-
 
 - name: Copy file.
   ios_command:
@@ -26,16 +46,12 @@
     wait_for: result[0] contains OK
   when: (not dir.stdout | join(' ') | regex_search(ios_version)) and (not ansible_net_image | regex_search(ios_version))
 
-- name: Verify chksum.
+- name: Calculate chksum.
   ios_command:
     commands: verify /md5 flash:{{ios_version}}
   register: md5
-- name: Parse md5
-  # debug:
-  #   msg: "{{md5.stdout | join(' ') | regex_findall( '[\\d|\\w]{32}' ) }}"
-  #   # msg: "{{ ansible_interfaces | select('match', '^(eth|wlan)[0-9]+') | list }}"
-    # msg: "{{md5.stdout | join(' ') | regex_findall(ios_version_chksum) }}"
-  # when: not md5.stdout | join (' ') | regex_search(ios_version_chksum)
+
+- name: Check md5
   fail:
     msg:
       - "The MD5 checksums do not match"
