@@ -3,6 +3,14 @@
   ios_facts:
     gather_subset: "!hardware"
 
+- name: Check running version.
+  fail:
+      msg:
+        - "Device is already running correct version"
+        - "Running version          ->{{ansible_net_image}}"
+        - "Version to be installed  ->flash:{{ios_version}}"
+  when: ansible_net_image == 'flash:' + ios_version
+
 - name: Check current version.
   ios_command:
       commands: dir | i bin

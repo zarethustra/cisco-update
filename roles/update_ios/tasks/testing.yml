@@ -10,9 +10,9 @@
 
 - name: Facts
   set_fact:
-    my_free: "{{ free_space.stdout[0] | regex_search(regexp) }}"
-  vars:
-    regexp: '(?<=\()\d+'
+    my_free: "{{ free_space.stdout[0] | regex_search(ios_freespac_regex) }}"
+  # vars:
+  #   regexp: '(?<=\()\d+'
 - debug:
     msg:
       - "Free Space ->{{my_free}}"
