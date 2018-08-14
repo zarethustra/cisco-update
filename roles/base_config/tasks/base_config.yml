@@ -1,0 +1,3 @@
+---
+- debug:
+    msg: "Run base config play"

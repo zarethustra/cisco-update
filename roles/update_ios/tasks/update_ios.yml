@@ -1,7 +1,7 @@
 ---
 - name: Gather facts.
   ios_facts:
-    gather_subset: "!hardware"
+    gather_subset: "config"
 
 - name: Check running version.
   fail:
@@ -11,18 +11,21 @@
         - "Version to be installed  ->flash:{{ios_version}}"
   when: ansible_net_image == 'flash:' + ios_version
 
-- name: Check current version.
+- name: Check flash version.
   ios_command:
-      commands: dir | i bin
+      commands: dir
   register: dir
+
+- debug:
+    var: dir
+
+- name: Stop
+  fail:   
 
 - name: Get flash free space.
   ios_command:
     commands: "dir flash: | i free"
   register: free_space
-
-- debug:
-    var: free_space # not required. A variable name to debug.  Mutually exclusive with the 'msg' option.
 
 - name: Check free space.
   debug:
