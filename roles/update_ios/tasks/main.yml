@@ -1,4 +1,4 @@
 ---
 - name:     Update IOS.
-  include:  update_ios_changeme.yml
+  include:  update_ios.yml
   tags:     update_ios

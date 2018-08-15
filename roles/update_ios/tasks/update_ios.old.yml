@@ -1,0 +1,67 @@
+---
+- name: Gather facts.
+  ios_facts:
+    gather_subset: "config"
+
+- name: Check running version.
+  fail:
+      msg:
+        - "Device is already running correct version"
+        - "Running version          ->{{ansible_net_image}}"
+        - "Version to be installed  ->flash:{{ios_version}}"
+  when: ansible_net_image == 'flash:' + ios_version
+
+- name: Check flash version.
+  ios_command:
+      commands: dir
+  register: dir
+
+- debug:
+    var: dir
+
+- name: Stop
+  fail:   
+
+- name: Get flash free space.
+  ios_command:
+    commands: "dir flash: | i free"
+  register: free_space
+
+- name: Check free space.
+  debug:
+    msg: "space {{free_space.stdout | join(' ') | regex_findall( '(?<=\\()\\d+' ) }}"
+
+  # vars:
+    # free_memory: "{{free_space.stdout | join(' ') | regex_findall( '(?<=\\()\\d+' ) }}"
+# - debug:
+    # var: "{{free_memory}}"
+
+- name: Show variables.
+  debug:
+    msg:
+      - "ios_version->{{ios_version}}"
+      - "image      ->{{ansible_net_image}}"
+      - "flash      ->{{dir.stdout_lines}}"
+    verbosity: 1
+
+- name: Copy file.
+  ios_command:
+    commands:
+      - command: copy ftp://cisco:Tran$f3rD8ta@10.217.25.197/c2960s-universalk9-mz.152-2.E8.bin flash://c2960s-universalk9-mz.152-2.E8.bin
+        prompt: 'Destination filename [c2960s-universalk9-mz.152-2.E8.bin]?'
+        answer: "\r"
+    wait_for: result[0] contains OK
+  when: (not dir.stdout | join(' ') | regex_search(ios_version)) and (not ansible_net_image | regex_search(ios_version))
+
+- name: Calculate chksum.
+  ios_command:
+    commands: verify /md5 flash:{{ios_version}}
+  register: md5
+
+- name: Check md5
+  fail:
+    msg:
+      - "The MD5 checksums do not match"
+      - "File check sum is:{{ios_version_chksum}}"
+      - "The device calculated checksum is:{{md5.stdout | join(' ') | regex_findall( '[\\d|\\w]{32}' ) }}"
+  when: not md5.stdout | join (' ') | regex_search(ios_version_chksum)
