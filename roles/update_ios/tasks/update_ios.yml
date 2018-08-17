@@ -2,6 +2,7 @@
 - name: Gather facts.
   ios_facts:
     gather_subset: "!all"
+  tags: facts
 - name: output
   ios_command:
     commands: "dir flash:"
@@ -9,9 +10,10 @@
 
 - name: Set variables.
   set_fact:
-    is_on_correct:  "{{ansible_net_image == 'flash:' + ios_version}}"
-    is_on_flash:    "{{dir.stdout[0] | regex_search(ios_version) | ternary('yes','no')}}"
-    free_space:     "{{dir.stdout[0] | regex_search(ios_freespace_regex)}}"
+    is_on_correct:              "{{ansible_net_image == 'flash:' + ios_version}}"
+    is_on_flash:                "{{dir.stdout[0] | regex_search(ios_version) | ternary('yes','no')}}"
+    free_space:                 "{{dir.stdout[0] | regex_search(ios_freespace_regex)}}"
+    is_pkg_version_upgraded:    "{{dir.stdout[0] | regex_search(ios_pkg_version) | ternary('yes','no')}}"
 
 - name: Update IOS.
   block:
@@ -28,6 +30,7 @@
   ios_command:
     commands: verify /md5 flash:{{ios_version}}
   register: md5
+  tags: md5
 
 - name: Check md5
   fail:
@@ -36,3 +39,13 @@
       - "File check sum is                :{{ios_version_chksum}}"
       - "The device calculated checksum is:{{md5.stdout[0] | regex_search( '[\\d|\\w]{32}' ) }}"
   when: not md5.stdout[0] | regex_search(ios_version_chksum)
+  tags: md5
+
+- name: Change Boot
+  ios_command:
+    commands:
+      # - command: dir
+      - command: request platform software package install switch all file flash:{{ios_version}} auto-copy
+    wait_for: result[0] contains {{ios_boot_response}}
+  when: (not is_pkg_version_upgraded) and (ansible_net_image == "flash:packages.conf")
+  tags: boot

@@ -1,5 +1,5 @@
 ---
-- hosts: ansible-test
+- hosts: all
   gather_facts: no
 
 
