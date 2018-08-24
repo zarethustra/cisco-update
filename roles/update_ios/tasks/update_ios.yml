@@ -3,49 +3,66 @@
   ios_facts:
     gather_subset: "!all"
   tags: facts
-- name: output
+- name: Output
   ios_command:
     commands: "dir flash:"
   register: dir
 
 - name: Set variables.
   set_fact:
-    is_on_correct:              "{{ansible_net_image == 'flash:' + ios_version}}"
-    is_on_flash:                "{{dir.stdout[0] | regex_search(ios_version) | ternary('yes','no')}}"
-    free_space:                 "{{dir.stdout[0] | regex_search(ios_freespace_regex)}}"
-    is_pkg_version_upgraded:    "{{dir.stdout[0] | regex_search(ios_pkg_version) | ternary('yes','no')}}"
+    is_on_correct:              "{{ansible_net_version == (ios_version | regex_search(ios_version_regex))}}"
+    is_on_flash:                "{{  dir.stdout[0] | regex_search(ios_version) | ternary('yes','no')}}"
+    free_space:                 "{{  dir.stdout[0] | regex_search(ios_freespace_regex)}}"
+    is_pkg_version_upgraded:    "{{  dir.stdout[0] | regex_search(ios_pkg_version) | ternary('yes','no')}}"
+    is_enough_space:            "{{ (dir.stdout[0] | regex_search(ios_freespace_regex) | int) > (ios_filesize | int) }}"
+    is_new_file_copied:         no
+    is_chksum_correct:          yes
 
-- name: Update IOS.
+
+- name: COPY FILE.
   block:
-    - name: Copy file.
+    - name: FTP file to flash.
       ios_command:
         commands:
           - command: copy ftp://cisco:Tran$f3rD8ta@10.217.25.197/{{ios_version}} flash://{{ios_version}}
             prompt: 'Destination filename [{{ios_version}}]?'
             answer: "\r"
         wait_for: result[0] contains OK
-  when: (not is_on_flash) and (not is_on_correct) and (free_space | int) > (ios_filesize | int)
+      register: ftp_result
+      changed_when: "'OK' in ftp_result.stdout[0]"
+    - name: Register ftp transfer
+      set_fact:
+        is_new_file_copied: "{{ftp_result.changed}}"
+  when: (not is_on_flash) and (not is_on_correct) and (is_enough_space)
 
-- name: Calculate chksum.
-  ios_command:
-    commands: verify /md5 flash:{{ios_version}}
-  register: md5
-  tags: md5
+- name: CHECKSUM SECTION.
+  block:
+    - name: Calculate checksum.
+      ios_command:
+        commands: verify /md5 flash:{{ios_version}}
+      register: md5
+      tags: md5
+    - name: Verify and register checksum.
+      set_fact:
+        is_chksum_correct: "{{md5.stdout[0] | regex_search(ios_version_chksum) | ternary('yes','no')}}"
+  when: (is_new_file_copied)
 
-- name: Check md5
+- name: Compare checksum.
   fail:
     msg:
       - "The MD5 checksums do not match"
       - "File check sum is                :{{ios_version_chksum}}"
       - "The device calculated checksum is:{{md5.stdout[0] | regex_search( '[\\d|\\w]{32}' ) }}"
-  when: not md5.stdout[0] | regex_search(ios_version_chksum)
   tags: md5
+  when: not is_chksum_correct
 
 - name: Change Boot
   ios_command:
     commands:
       # - command: dir
       - command: request platform software package install switch all file flash:{{ios_version}} auto-copy
-    wait_for: result[0] contains {{ios_boot_response}}
+    wait_for: result[0] contains SUCCESS
+  register: update_status
+  changed_when: "'SUCCESS' in update_status.stdout[0]"
   when: (not is_pkg_version_upgraded) and (ansible_net_image == "flash:packages.conf")
   tags: boot

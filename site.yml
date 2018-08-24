@@ -5,4 +5,4 @@
 
   roles:
     - update_ios
-    - base_config
+    # - base_config
