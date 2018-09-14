@@ -1,3 +1,34 @@
 ---
-- debug:
-    msg: "Run base config play"
+# - name: COPY BASE CONFIG TO RUNNING CONFIG
+#   ios_command:
+#     commands:
+#       - command: copy ftp://cisco:Tran$f3rD8ta@10.217.25.197/9300/9300.base running-config
+#         prompt: 'Destination filename \[running-config\]?'
+#         answer: "\r"
+#   register: ftp_result
+#   changed_when: "'OK' in ftp_result.stdout[0]"
+
+- name: Gather facts.
+  ios_facts:
+    gather_subset: "!all"
+  tags: facts
+
+- name: Models
+  debug:
+    msg: "In stack {{item}}"
+  loop: "{{ansible_net_stacked_models}}"
+
+- name: Default All Interfaces
+  ios_config:
+    lines: macro apply shutdown-port
+    before: "{{item}}"
+  with_items:
+    - interface range twoGigabitEthernet 1/0/1-36
+    - interface range TenGigabitEthernet 1/0/37-48
+    - interface range gigabitEthernet 1/1/1-4
+    - interface range tenGigabitEthernet 1/1/1-8
+    - interface range FortyGigabitEthernet 1/1/1-2
+
+- name: Set Hostname
+  ios_config:
+    lines: hostname "{{inventory_hostname}}"
