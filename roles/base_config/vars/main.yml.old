@@ -1,0 +1,87 @@
+---
+# version:
+#   - type: UXM
+#     interfaces:
+#       - name: twoGigabitEthernet
+#         start: 1
+#         end: 36
+#       - name: twoTenGigabitEthernet
+#         start: 37
+#         end: 48
+  # - type: UX
+  #   interfaces:
+  #     - three
+  #     - four
+
+# types:
+#   UXM:
+#     interfaces:
+#       - TwoGigabitEthernet:
+#           start: 1
+#           end: 2
+#       - TenGigabitEthernet:
+#           starts: 37
+#           end: 40
+#   blah:
+#     interfaces:
+#       - interface1:
+#           start: 10
+#           end: 20
+#       - interface2:
+#           start: 30
+#           end: 40
+
+
+
+my_interfaces: []
+
+inv_interfaces:
+- {name: GigabitEthernet1/1/1}
+- {name: GigabitEthernet1/1/2}
+# - {name: twoGigabitEthernet1/0/3}
+# - {name: twoGigabitEthernet1/0/4}
+# - {name: twoGigabitEthernet1/0/5}
+# - {name: twoGigabitEthernet1/0/6}
+# - {name: twoGigabitEthernet1/0/7}
+# - {name: twoGigabitEthernet1/0/8}
+# - {name: twoGigabitEthernet1/0/9}
+# - {name: twoGigabitEthernet1/0/10}
+# - {name: twoGigabitEthernet1/0/11}
+# - {name: twoGigabitEthernet1/0/12}
+# - {name: twoGigabitEthernet1/0/13}
+# - {name: twoGigabitEthernet1/0/14}
+# - {name: twoGigabitEthernet1/0/15}
+# - {name: twoGigabitEthernet1/0/16}
+# - {name: twoGigabitEthernet1/0/17}
+# - {name: twoGigabitEthernet1/0/18}
+# - {name: twoGigabitEthernet1/0/19}
+# - {name: twoGigabitEthernet1/0/20}
+# - {name: twoGigabitEthernet1/0/21}
+# - {name: twoGigabitEthernet1/0/22}
+# - {name: twoGigabitEthernet1/0/23}
+# - {name: twoGigabitEthernet1/0/24}
+# - {name: twoGigabitEthernet1/0/25}
+# - {name: twoGigabitEthernet1/0/26}
+# - {name: twoGigabitEthernet1/0/27}
+# - {name: twoGigabitEthernet1/0/28}
+# - {name: twoGigabitEthernet1/0/29}
+# - {name: twoGigabitEthernet1/0/30}
+# - {name: twoGigabitEthernet1/0/31}
+# - {name: twoGigabitEthernet1/0/32}
+# - {name: twoGigabitEthernet1/0/33}
+# - {name: twoGigabitEthernet1/0/34}
+# - {name: twoGigabitEthernet1/0/35}
+# - {name: twoGigabitEthernet1/0/36}
+# - {name: TenGigabitEthernet 1/0/37}
+# - {name: TenGigabitEthernet 1/0/38}
+# - {name: TenGigabitEthernet 1/0/39}
+# - {name: TenGigabitEthernet 1/0/40}
+# - {name: TenGigabitEthernet 1/0/41}
+# - {name: TenGigabitEthernet 1/0/42}
+# - {name: TenGigabitEthernet 1/0/43}
+# - {name: TenGigabitEthernet 1/0/44}
+# - {name: TenGigabitEthernet 1/0/45}
+# - {name: TenGigabitEthernet 1/0/46}
+# - {name: TenGigabitEthernet 1/0/47}
+# - {name: TenGigabitEthernet 1/0/48}
+# 48P_interfaces:

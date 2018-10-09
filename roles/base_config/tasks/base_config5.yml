@@ -1,0 +1,33 @@
+---
+- debug:
+    msg: "From Inventory {{inv_interfaces}}"
+
+# - name: Set Up Default Interface Configuration
+#   ios_interface:
+#       aggregate: "{{interfaces}}"
+#       # aggregate:
+#       #   - { name: twoGigabitEthernet1/0/2}
+#       #   - { name: twoGigabitEthernet1/0/2}
+
+#       # name: twoGigabitEthernet {{my_idx+1}}/0/2
+#       description: NewTest
+#       state: present
+#       enabled: False
+
+
+- name: Test
+  set_fact:
+    interface: "{{ lookup('template', './generate_interfaces.j2') }}"
+    my_name:
+        - "one"
+        - "two"
+- debug:
+    msg: "From JINJA \n {{interface}}"
+
+- name: test2
+  set_fact:
+    my_dict:  "{{ dict( my_name | zip(interface)) }}"
+- debug:
+    var: my_dict
+  debugger: always
+

@@ -1,0 +1,41 @@
+---
+# - name: test
+  # set_fact:
+  #   interfaces: [2]
+    # - name: GigabitEthernet1/1/1
+    # - name: GigabitEthernet1/1/2
+# - name: facts
+#   set_fact:
+#     my_interfaces: "{{ lookup('template', './generate_interfaces.j2') }}"
+
+# - debug:
+#     msg: interfaces "{{UXM_interfaces}}"
+# - name: Set Up Default Interface Configuration
+#   ios_interface:
+#       aggregate: "{{UXM_interfaces}}"
+#       description: test2
+#       state: present
+#       enabled: False
+#   debugger: always
+# Below is not idempotent
+# - name: Set Up Default Interface Configuration
+#   ios_interface:
+#       # aggregate:
+#     name: GigabitEthernet 1/1/1
+#     description: test3
+#     state: present
+#     enabled: False
+- debug:
+    msg: "{{x}}"
+- debug:
+    msg: "{{UXM_interfaces}}"
+
+- name: Set Fact
+#   set_fact: my_interfaces = "{{ UXM_interfaces | regex_replace('\\s\\d', '2') }}"
+  set_fact: foo="{{ UXM_interfaces | regex_replace('\\s\\d', '{{x}}') }}"
+#   register: fcc
+- debug: 
+    msg: "{{foo}}"
+#   debugger: always
+
+

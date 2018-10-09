@@ -1,4 +1,4 @@
 ---
 - name:     Set up base configuration.
-  include:  base_config.yml
+  include:  base_config6.yml
   tags:     base_config

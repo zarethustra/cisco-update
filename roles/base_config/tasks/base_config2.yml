@@ -1,0 +1,39 @@
+---
+# - name: Gather facts.
+#   ios_facts:
+#     gather_subset: "!all"
+#   tags: facts
+# - name: Set Up Default Interface Configuration
+#   ios_interface:
+#       aggregate: "{{interfaces}}"
+# #       - { name: twoGigabitEthernet1/0/2}
+#       description: UNUSED_PORT
+#       state: present
+# #       enabled: False
+
+# - name: Create vlan
+#   ios_vlan:
+#     vlan_id: 666
+#     name: test-vlan
+#     state: present
+
+# - name: Test l2 module.
+#   ios_l2_interface:
+#       name: TwoGigabitEthernet1/0/1 # required. Full name of the interface excluding any logical unit number, i.e. GigabitEthernet0/1.
+#       access_vlan: 666 # not required. Configure given VLAN in access port. If C(mode=access), used as the access VLAN ID.
+#       # state: present # not required. choices: present;absent;unconfigured. Manage the state of the Layer-2 Interface configuration.
+#       mode: access
+  # ignore_errors: yes
+
+# - name: Test vlan module.
+#   ios_vlan:
+#     vlan_id: 101
+#     interfaces: TwoGigabitEthernet1/0/1
+
+
+- name: Interface testing
+  ios_interface:
+    name: TwoGigabitEthernet1/0/1
+    description: test
+    state: present
+    enabled: true

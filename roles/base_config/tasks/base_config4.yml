@@ -1,0 +1,36 @@
+---
+- name: Test
+  set_fact:
+    # interface: "{{ lookup('template', './generate_interfaces.j2') }}"
+    name:
+      - name
+      - name2
+    interfaces:
+      - one
+      - two      
+- debug:
+    var: name      
+- debug:
+    var: interfaces
+
+- name: test2
+  set_fact:
+    my_dict:  "{{ dict( name | zip(interfaces)) }}"
+- debug:
+    var: my_dict
+
+# - name: interface
+#   ios_interface:
+#     aggregate: "{{my_dict}}"
+
+# - name: Set Up Default Interface Configuration
+#   ios_interface:
+#       aggregate: "{{interface}}"
+#       # aggregate:
+#       #   - { name: twoGigabitEthernet1/0/2}
+#       #   - { name: twoGigabitEthernet1/0/2}
+
+#       # name: twoGigabitEthernet {{my_idx+1}}/0/2
+#       description: NewTest
+#       state: present
+#       enabled: False

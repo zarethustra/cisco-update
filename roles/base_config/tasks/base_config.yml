@@ -1,12 +1,12 @@
 ---
-# - name: COPY BASE CONFIG TO RUNNING CONFIG
-#   ios_command:
-#     commands:
-#       - command: copy ftp://cisco:Tran$f3rD8ta@10.217.25.197/9300/9300.base running-config
-#         prompt: 'Destination filename \[running-config\]?'
-#         answer: "\r"
-#   register: ftp_result
-#   changed_when: "'OK' in ftp_result.stdout[0]"
+- name: COPY BASE CONFIG TO RUNNING CONFIG
+  ios_command:
+    commands:
+      - command: copy ftp://cisco:Tran$f3rD8ta@10.217.25.197/9300/9300.base running-config
+        prompt: 'Destination filename \[running-config\]?'
+        answer: "\r"
+  register: ftp_result
+  changed_when: "'OK' in ftp_result.stdout[0]"
 
 - name: Gather facts.
   ios_facts:
